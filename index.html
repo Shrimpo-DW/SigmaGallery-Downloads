@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sigma Gallery - Downloads</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+      text-align: center;
+    }
+    .card {
+      background-color: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 40px 32px;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    h1 {
+      font-size: 1.75rem;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+    p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .status-msg {
+      font-size: 0.9rem;
+      color: #38bdf8;
+      margin-bottom: 24px;
+      padding: 10px;
+      background-color: rgba(56, 189, 248, 0.1);
+      border-radius: 8px;
+    }
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      cursor: pointer;
+    }
+    .btn:active {
+      transform: scale(0.98);
+    }
+    .btn-apk {
+      background-color: #22c55e;
+      color: #052e16;
+    }
+    .btn-apk:hover {
+      background-color: #16a34a;
+    }
+    .btn-exe {
+      background-color: #3b82f6;
+      color: #1e3a8a;
+    }
+    .btn-exe:hover {
+      background-color: #2563eb;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>Sigma Gallery Downloads</h1>
+    <p>Select your platform below if your download does not start automatically.</p>
+
+    <div id="status" class="status-msg" style="display: none;"></div>
+
+    <div class="button-group">
+      <!-- Ensure the href filenames match the actual files uploaded to your repository -->
+      <a id="apk-link" href="SigmaGallery.apk" download class="btn btn-apk">Download Android (.APK)</a>
+      <a id="exe-link" href="SigmaGallery.exe" download class="btn btn-exe">Download Windows (.EXE)</a>
+    </div>
+  </div>
+
+  <script>
+    // Config: Update these file paths if your uploaded files have different names
+    const APK_FILE_PATH = "SigmaGallery.apk";
+    const EXE_FILE_PATH = "SigmaGallery.exe";
+
+    function triggerDownload(filePath, label) {
+      const statusElement = document.getElementById("status");
+      statusElement.style.display = "block";
+      statusElement.innerText = "Starting " + label + " download...";
+
+      // Create an invisible anchor tag to trigger the browser's download prompt
+      const hiddenAnchor = document.createElement("a");
+      hiddenAnchor.href = filePath;
+      hiddenAnchor.download = filePath.split('/').pop();
+      document.body.appendChild(hiddenAnchor);
+      hiddenAnchor.click();
+      document.body.removeChild(hiddenAnchor);
+    }
+
+    // Inspect the path, search parameters, and hash
+    const path = window.location.pathname.toLowerCase();
+    const hash = window.location.hash.toLowerCase();
+    const searchParams = new URLSearchParams(window.location.search);
+    const fileParam = searchParams.get('file')?.toLowerCase();
+
+    // Trigger download depending on the URL accessed
+    if (path.endsWith('/apk') || hash === '#apk' || fileParam === 'apk') {
+      triggerDownload(APK_FILE_PATH, "Android APK");
+    } else if (path.endsWith('/exe') || hash === '#exe' || fileParam === 'exe') {
+      triggerDownload(EXE_FILE_PATH, "Windows EXE");
+    }
+  </script>
+
+</body>
+</html>
