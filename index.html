@@ -1,148 +1,416 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sigma Gallery - Downloads</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #ffffff;
-      color: #000000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 24px;
-      text-align: center;
-    }
-    .card {
-      background-color: #ffffff;
-      border: 2px solid #000000;
-      border-radius: 12px;
-      padding: 40px 32px;
-      max-width: 480px;
-      width: 100%;
-      box-shadow: 6px 6px 0px #000000;
-    }
-    h1 {
-      font-size: 1.75rem;
-      margin-bottom: 8px;
-      color: #000000;
-      font-weight: 800;
-    }
-    p {
-      color: #555555;
-      font-size: 0.95rem;
-      margin-bottom: 24px;
-      line-height: 1.5;
-    }
-    .status-msg {
-      font-size: 0.9rem;
-      color: #000000;
-      margin-bottom: 24px;
-      padding: 12px;
-      background-color: #f3f4f6;
-      border: 1px solid #000000;
-      border-radius: 6px;
-    }
-    .button-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .btn {
-      display: inline-block;
-      width: 100%;
-      padding: 16px 20px;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 1rem;
-      text-decoration: none;
-      transition: background-color 0.2s ease, transform 0.1s ease;
-      cursor: pointer;
-      border: 2px solid #000000;
-    }
-    .btn:active {
-      transform: scale(0.98);
-    }
-    .btn-apk, .btn-exe {
-      background-color: #000000;
-      color: #ffffff;
-    }
-    .btn-apk:hover, .btn-exe:hover {
-      background-color: #333333;
-    }
-    .hidden {
-      display: none !important;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download SigmaGallery</title>
+    <style>
+        :root {
+            --bg-color: #0b0d13;
+            --card-bg: rgba(26, 28, 38, 0.85);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #9aa0a6;
+            --accent-glow: rgba(120, 119, 198, 0.35);
+            --btn-apk-bg: #ffffff;
+            --btn-apk-text: #000000;
+            --btn-exe-bg: #2a2e3d;
+            --btn-exe-text: #ffffff;
+            --btn-exe-border: rgba(255, 255, 255, 0.2);
+            --link-color: #818cf8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Glowing Orbs */
+        .bg-glow-1, .bg-glow-2 {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .bg-glow-1 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, #6366f1 0%, rgba(99, 102, 241, 0) 70%);
+            top: 10%;
+            left: 15%;
+            animation: floatGlow1 12s infinite alternate ease-in-out;
+        }
+
+        .bg-glow-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #a855f7 0%, rgba(168, 85, 247, 0) 70%);
+            bottom: 10%;
+            right: 15%;
+            animation: floatGlow2 14s infinite alternate ease-in-out;
+        }
+
+        @keyframes floatGlow1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, 50px) scale(1.15); }
+        }
+
+        @keyframes floatGlow2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-50px, -40px) scale(1.2); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Banner Carousel Slot */
+        .image-slot {
+            width: 100%;
+            height: 200px;
+            background-color: #12141c;
+            border: 2px dashed var(--border-color);
+            border-radius: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .image-slot:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 20px var(--accent-glow);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .image-slot:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.1s ease;
+        }
+
+        .image-slot img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out, transform 0.4s ease;
+        }
+
+        .image-slot:hover img {
+            transform: scale(1.05);
+        }
+
+        .image-slot img.active {
+            opacity: 1;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-align: left;
+            margin-bottom: 16px;
+        }
+
+        .icon-slot {
+            width: 68px;
+            height: 68px;
+            background-color: #12141c;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .icon-slot:hover {
+            transform: rotate(3deg) scale(1.05);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .icon-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .app-info h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .app-info p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Reformatted Topics Description */
+        .app-description {
+            text-align: left;
+            color: #d1d5db;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            background: rgba(18, 20, 28, 0.5);
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .app-description ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .app-description li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 8px;
+        }
+
+        .app-description li:last-child {
+            margin-bottom: 0;
+        }
+
+        .app-description li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--link-color);
+            font-weight: bold;
+        }
+
+        .app-description a {
+            color: var(--link-color);
+            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
+
+        .app-description a:hover {
+            color: #a5b4fc;
+        }
+
+        .file-details {
+            background-color: rgba(18, 20, 28, 0.7);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .file-details span strong {
+            color: var(--text-main);
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Download Button Animations */
+        .btn-download {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 0;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease, background-color 0.2s ease;
+        }
+
+        .btn-download svg {
+            transition: transform 0.25s ease;
+        }
+
+        .btn-download:hover svg {
+            transform: translateY(2px);
+        }
+
+        .btn-download:active {
+            transform: translateY(1px) scale(0.97) !important;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3) !important;
+            transition: transform 0.08s ease, box-shadow 0.08s ease;
+        }
+
+        .btn-apk {
+            background-color: var(--btn-apk-bg);
+            color: var(--btn-apk-text);
+        }
+
+        .btn-apk:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-exe {
+            background-color: var(--btn-exe-bg);
+            color: var(--btn-exe-text);
+            border: 1px solid var(--btn-exe-border);
+        }
+
+        .btn-exe:hover {
+            transform: translateY(-3px);
+            background-color: #34394b;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        #download-status {
+            margin-top: 14px;
+            font-size: 0.85rem;
+            color: #34d399;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-text {
+            margin-top: 14px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+    </style>
 </head>
 <body>
 
-  <div class="card">
-    <h1>Sigma Gallery Downloads</h1>
-    <p id="desc-text">Get the latest version for your platform below.</p>
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
 
-    <div id="status" class="status-msg hidden"></div>
+    <div class="container">
+        <!-- Banner Carousel -->
+        <div class="image-slot" onclick="switchBanner()">
+            <img src="https://i.ibb.co/Nd6YsPgb/Captura-de-Tela-203.png" alt="SigmaGallery Banner 1" class="banner-img active">
+            <img src="https://i.ibb.co/BKNbcr3q/Captura-de-Tela-204.png" alt="SigmaGallery Banner 2" class="banner-img">
+        </div>
 
-    <div class="button-group" id="button-container">
-      <a id="apk-btn" href="SigmaGallery.apk" download class="btn btn-apk">Download Android (.APK)</a>
-      <a id="exe-btn" href="SigmaGallery.exe" download class="btn btn-exe hidden">Download Windows (.EXE)</a>
+        <!-- Header -->
+        <div class="app-header">
+            <div class="icon-slot">
+                <!-- App Icon -->
+                <img src="https://i.ibb.co/gLSBPWmN/Captura-de-Tela-192.png" alt="SigmaGallery Icon">
+            </div>
+            <div class="app-info">
+                <h1>SigmaGallery</h1>
+                <p>Version 2.2 • Android & Windows</p>
+            </div>
+        </div>
+
+        <!-- Description in Topics -->
+        <div class="app-description">
+            <ul>
+                <li><strong>Lightning Fast:</strong> Optimized for smooth navigation across large media collections.</li>
+                <li><strong>High-Resolution:</strong> Crystal clear media viewing built for performance.</li>
+                <li><strong>Access Key Required:</strong> Both Android & Windows apps require a key. Get yours at <a href="https://link-center.net/4003397/PIAgrdJJsHUd" target="_blank">Link-Center</a>.</li>
+            </ul>
+        </div>
+
+        <!-- File Details -->
+        <div class="file-details">
+            <span>Size: <strong>12.5 MB</strong></span>
+            <span>Platforms: <strong>APK / EXE</strong></span>
+            <span>Safety: <strong>Verified</strong></span>
+        </div>
+
+        <!-- Download Buttons -->
+        <div class="button-group">
+            <button class="btn-download btn-apk" onclick="triggerDownload('SigmaGallery.apk', 'Android APK')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download APK (Android)
+            </button>
+
+            <button class="btn-download btn-exe" onclick="triggerDownload('SigmaGallery.exe', 'Windows PC')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18"/><path d="M3 12h18"/></svg>
+                Download EXE (Windows PC)
+            </button>
+        </div>
+
+        <!-- Notification text -->
+        <div id="download-status">Download started! Check your browser downloads.</div>
+
+        <p class="footer-text">The file will download directly to your device.</p>
     </div>
-  </div>
 
-  <script>
-    const APK_FILE = "SigmaGallery.apk";
-    const EXE_FILE = "SigmaGallery.exe";
+    <script>
+        // Banner Auto-Switching Script & Manual Click Switch
+        let currentBannerIndex = 0;
+        const banners = document.querySelectorAll('.banner-img');
 
-    const params = new URLSearchParams(window.location.search);
-    const fileParam = params.get('file')?.toLowerCase();
-    const hash = window.location.hash.toLowerCase();
+        function switchBanner() {
+            banners[currentBannerIndex].classList.remove('active');
+            currentBannerIndex = (currentBannerIndex + 1) % banners.length;
+            banners[currentBannerIndex].classList.add('active');
+        }
 
-    const statusEl = document.getElementById("status");
-    const apkBtn = document.getElementById("apk-btn");
-    const exeBtn = document.getElementById("exe-btn");
-    const descText = document.getElementById("desc-text");
+        setInterval(switchBanner, 3000);
 
-    let targetFile = "";
-    let label = "";
+        // Download Trigger Script
+        function triggerDownload(filename, fileType) {
+            const link = document.createElement('a');
+            link.href = filename;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
 
-    if (fileParam === 'apk' || hash === '#apk') {
-      targetFile = APK_FILE;
-      label = "Android APK";
-      apkBtn.classList.remove("hidden");
-      exeBtn.classList.add("hidden");
-    } else if (fileParam === 'exe' || hash === '#exe') {
-      targetFile = EXE_FILE;
-      label = "Windows EXE";
-      exeBtn.classList.remove("hidden");
-      apkBtn.classList.add("hidden");
-    }
+            const status = document.getElementById('download-status');
+            status.innerText = `Downloading ${fileType}... Check your downloads folder.`;
+            status.style.opacity = '1';
 
-    if (targetFile) {
-      descText.style.display = "none";
-      statusEl.style.display = "block";
-      statusEl.innerHTML = `Your download for <strong>${label}</strong> should begin shortly.<br><small style="color:#666666; display:block; margin-top:6px;">If it doesn't start automatically, click the button below.</small>`;
-
-      window.addEventListener("DOMContentLoaded", () => {
-        setTimeout(() => {
-          const a = document.createElement("a");
-          a.href = targetFile;
-          a.download = targetFile;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        }, 500);
-      });
-    }
-  </script>
+            setTimeout(() => {
+                status.style.opacity = '0';
+            }, 4000);
+        }
+    </script>
 
 </body>
 </html>
