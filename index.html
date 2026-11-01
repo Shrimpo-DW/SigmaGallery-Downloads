@@ -3,152 +3,341 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download SigmaGallery</title>
-    <style>
-        :root {
-            --bg-color: #07080c;
-            --card-bg: rgba(20, 22, 30, 0.85);
-            --border-color: rgba(255, 255, 255, 0.12);
-            --text-main: #ffffff;
-            --text-muted: #9aa0a6;
-            --glow-silver-1: rgba(255, 255, 255, 0.12);
-            --glow-silver-2: rgba(200, 210, 225, 0.1);
-            --accent-glow: rgba(255, 255, 255, 0.25);
-            --link-color: #a5b4fc;
+    <title>Download SigmaGallery — Red & Black Edition</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    },
+                    colors: {
+                        crimson: {
+                            400: '#ff3b5c',
+                            500: '#ff1a3c',
+                            600: '#e60026',
+                            700: '#b8001e',
+                            glow: 'rgba(255, 26, 60, 0.4)',
+                        },
+                        dark: {
+                            base: '#060608',
+                            card: '#0c0d12',
+                            inner: '#12141c',
+                        }
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 7s infinite alternate ease-in-out',
+                        'float-glow': 'floatGlow 10s infinite alternate ease-in-out',
+                        'sheen': 'sheen 3s infinite',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%': { opacity: '0.35', transform: 'scale(1) translate(0, 0)' },
+                            '100%': { opacity: '0.7', transform: 'scale(1.25) translate(25px, -15px)' },
+                        },
+                        floatGlow: {
+                            '0%': { transform: 'translate(0, 0)' },
+                            '100%': { transform: 'translate(-35px, 40px)' },
+                        },
+                        sheen: {
+                            '0%': { transform: 'translateX(-150%) rotate(25deg)' },
+                            '100%': { transform: 'translateX(150%) rotate(25deg)' }
+                        }
+                    }
+                }
+            }
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; overflow-x: hidden; position: relative; perspective: 1200px; }
-        .bg-glow-1, .bg-glow-2 { position: fixed; border-radius: 50%; filter: blur(120px); z-index: 0; pointer-events: none; }
-        .bg-glow-1 { width: 500px; height: 500px; background: radial-gradient(circle, var(--glow-silver-1) 0%, rgba(255,255,255,0) 70%); top: 0%; left: 10%; animation: floatGlow1 16s infinite alternate ease-in-out; }
-        .bg-glow-2 { width: 550px; height: 550px; background: radial-gradient(circle, var(--glow-silver-2) 0%, rgba(200,210,225,0) 70%); bottom: 0%; right: 10%; animation: floatGlow2 18s infinite alternate ease-in-out; }
-        @keyframes floatGlow1 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(50px,60px) scale(1.15); } }
-        @keyframes floatGlow2 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(-60px,-50px) scale(1.2); } }
-        .container { position: relative; z-index: 1; width: 100%; max-width: 480px; background: var(--card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: 28px; padding: 26px; text-align: center; box-shadow: 0 30px 60px rgba(0,0,0,0.7); transition: transform 0.2s cubic-bezier(0.1,1,0.1,1), box-shadow 0.3s ease; transform-style: preserve-3d; }
-        .image-slot { width: 100%; height: 200px; background-color: rgba(10,12,18,0.8); border: 1px solid var(--border-color); border-radius: 18px; margin-bottom: 20px; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; cursor: pointer; box-shadow: 0 12px 30px rgba(0,0,0,0.5); transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease; }
-        .image-slot:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 18px 40px rgba(0,0,0,0.6), 0 0 30px var(--accent-glow); border-color: rgba(255,255,255,0.4); }
-        .image-slot img { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.8s ease-in-out, transform 0.6s ease; }
-        .image-slot:hover img { transform: scale(1.06); }
-        .image-slot img.active { opacity: 1; }
-        .app-header { display: flex; align-items: center; gap: 16px; text-align: left; margin-bottom: 18px; }
-        .icon-slot { width: 70px; height: 70px; background-color: rgba(10,12,18,0.8); border: 1px solid var(--border-color); border-radius: 18px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .icon-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .app-info h1 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
-        .app-info p { color: var(--text-muted); font-size: 0.85rem; font-weight: 500; }
-        .app-description { text-align: left; color: #e2e8f0; font-size: 0.85rem; line-height: 1.5; margin-bottom: 20px; background: rgba(255,255,255,0.03); padding: 16px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); }
-        .app-description ul { list-style-type: none; padding: 0; margin: 0; }
-        .app-description li { position: relative; padding-left: 28px; margin-bottom: 12px; }
-        .app-description li:last-child { margin-bottom: 0; }
-        .app-description li svg { position: absolute; left: 0; top: 2px; width: 16px; height: 16px; stroke: #ffffff; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-        .app-description a { color: var(--link-color); text-decoration: underline; font-weight: 600; transition: color 0.2s ease; }
-        .app-description a:hover { color: #ffffff; }
-        .file-details { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 12px 18px; display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 0.85rem; color: var(--text-muted); }
-        .file-details span strong { color: var(--text-main); }
-        .button-group { display: flex; flex-direction: column; gap: 12px; }
-        .btn-download { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 15px 0; font-weight: 700; font-size: 0.95rem; text-decoration: none; border-radius: 16px; cursor: pointer; position: relative; overflow: hidden; transition: transform 0.25s cubic-bezier(0.2,0.8,0.2,1), box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease; }
-        .btn-download svg { transition: transform 0.25s ease; }
-        .btn-download:hover svg { transform: translateY(2px) scale(1.1); }
-        .btn-download:active { transform: translateY(1px) scale(0.97) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important; }
-        .btn-apk { background: rgba(255,255,255,0.95); color: #000000; border: 1px solid rgba(255,255,255,1); box-shadow: 0 8px 25px rgba(255,255,255,0.25), inset 0 1px 2px rgba(255,255,255,1), inset 0 -1px 2px rgba(0,0,0,0.1); }
-        .btn-apk:hover { transform: translateY(-3px); background: rgba(255,255,255,1); box-shadow: 0 14px 35px rgba(255,255,255,0.45); }
-        .btn-exe { background: #1b1f2c; color: #ffffff; border: 1px solid rgba(255,255,255,0.4); box-shadow: 0 8px 25px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.4); }
-        .btn-exe:hover { transform: translateY(-3px); background: #252a3a; box-shadow: 0 14px 35px rgba(0,0,0,0.8), 0 0 20px rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.7); }
-        .ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.4); transform: scale(0); animation: liquidRipple 0.6s linear; pointer-events: none; }
-        @keyframes liquidRipple { to { transform: scale(4); opacity: 0; } }
-        #download-status { margin-top: 14px; font-size: 0.85rem; color: #34d399; opacity: 0; font-weight: 600; transition: opacity 0.3s ease; }
-        .footer-text { margin-top: 12px; font-size: 0.75rem; color: var(--text-muted); }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #050507;
+            color: #ffffff;
+            perspective: 1200px;
+        }
+
+        /* Dark glass card styling with specular red border highlight */
+        .glass-card {
+            background: rgba(12, 13, 18, 0.85);
+            backdrop-filter: blur(28px) saturate(200%);
+            -webkit-backdrop-filter: blur(28px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 35px 90px rgba(0, 0, 0, 0.95),
+                        0 0 40px rgba(255, 26, 60, 0.12),
+                        inset 0 1px 1px rgba(255, 255, 255, 0.18);
+        }
+
+        .glass-inner {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        /* Red neon button glow */
+        .glow-button-apk {
+            background: linear-gradient(135deg, #ff1a3c 0%, #cc0022 100%);
+            box-shadow: 0 0 30px rgba(255, 26, 60, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+        }
+        .glow-button-apk:hover {
+            box-shadow: 0 0 45px rgba(255, 26, 60, 0.75), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+        }
+
+        .glow-button-exe {
+            background: rgba(18, 20, 28, 0.9);
+            border: 1px solid rgba(255, 26, 60, 0.4);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+        .glow-button-exe:hover {
+            border-color: rgba(255, 26, 60, 0.9);
+            box-shadow: 0 0 30px rgba(255, 26, 60, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Liquid ripple effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.45);
+            transform: scale(0);
+            animation: liquidRipple 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes liquidRipple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .preserve-3d {
+            transform-style: preserve-3d;
+        }
     </style>
 </head>
-<body>
-    <div class="bg-glow-1"></div>
-    <div class="bg-glow-2"></div>
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8 overflow-x-hidden selection:bg-crimson-500 selection:text-white">
 
-    <div class="container" id="tiltContainer">
-        <div class="image-slot" onclick="switchBanner()">
-            <img src="https://i.ibb.co/Nd6YsPgb/Captura-de-Tela-203.png" alt="SigmaGallery Banner 1" class="banner-img active">
-            <img src="https://i.ibb.co/BKNbcr3q/Captura-de-Tela-204.png" alt="SigmaGallery Banner 2" class="banner-img">
-        </div>
+    <!-- Ambient Crimson Background Glow Orbs -->
+    <div class="fixed top-[-10%] left-[-5%] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-crimson-600/35 via-red-900/20 to-transparent blur-[130px] pointer-events-none animate-pulse-glow"></div>
+    <div class="fixed bottom-[-10%] right-[-5%] w-[600px] h-[600px] rounded-full bg-gradient-to-tr from-red-600/25 via-red-950/20 to-transparent blur-[150px] pointer-events-none animate-float-glow"></div>
+    <div class="fixed top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-[400px] h-[400px] rounded-full bg-crimson-500/10 blur-[120px] pointer-events-none"></div>
 
-        <div class="app-header">
-            <div class="icon-slot">
-                <img src="https://i.ibb.co/C3J08bC2/Gemini-Generated-Image-n9jg1in9jg1in9jg.jpg" alt="SigmaGallery Icon">
+    <!-- Main Container Card -->
+    <div id="tiltContainer" class="glass-card relative z-10 w-full max-w-lg rounded-3xl p-6 sm:p-8 preserve-3d transition-transform duration-200 ease-out">
+        
+        <!-- Top Badge -->
+        <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-crimson-500/10 border border-crimson-500/30 text-crimson-400 text-xs font-semibold tracking-wide">
+                <span class="w-2 h-2 rounded-full bg-crimson-500 animate-pulse"></span>
+                Official Release
             </div>
-            <div class="app-info">
-                <h1>SigmaGallery</h1>
-                <p>Version 2.2 • Android & Windows</p>
+            <div class="text-xs text-slate-400 font-medium tracking-wide">
+                v2.2 Stable
             </div>
         </div>
 
-        <div class="app-description">
-            <ul>
-                <li>
-                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    <strong>Top-Tier Quality:</strong> Built with premium performance in mind, ensuring an immersive and gorgeous media viewing experience.
-                </li>
-                <li>
-                    <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    <strong>Lightning Fast:</strong> Optimized rendering engine for seamless, lag-free navigation across massive image collections.
-                </li>
-                <li>
-                    <svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 3l3-3m-3 3l2 2"/></svg>
-                    <strong>Access Key Required:</strong> Both the Android APK and Windows EXE versions require an active security key. Get yours instantly at <a href="https://link-center.net/4003397/PIAgrdJJsHUd" target="_blank">Link-Center</a>.
-                </li>
-                <li>
-                    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    <strong>Frequent Updates & Feedback:</strong> The apps receive new images frequently, and any feedback is welcome on TikTok at <a href="https://www.tiktok.com/@shrimpo.is.top1" target="_blank">@shrimpo.is.top1</a>.
-                </li>
-                <li>
-                    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    <strong>Safe & Verified:</strong> 100% clean builds, rigorously tested for secure operation across all compatible devices.
-                </li>
-            </ul>
+        <!-- Banner Image Showcase Slideshow -->
+        <div class="relative w-full h-52 sm:h-60 rounded-2xl overflow-hidden glass-inner mb-6 group cursor-pointer border border-white/10 hover:border-crimson-500/40 transition-colors" onclick="switchBanner()">
+            <!-- Image 1 -->
+            <img id="banner-0" src="https://i.ibb.co/Nd6YsPgb/Captura-de-Tela-203.png" 
+                 alt="SigmaGallery Banner 1" 
+                 onerror="this.onerror=null; this.src='https://placehold.co/600x300/0c0d12/ffffff?text=SigmaGallery+Banner+1'"
+                 class="banner-img absolute inset-0 w-full h-full object-cover opacity-100 transition-all duration-700 ease-in-out group-hover:scale-105">
+            
+            <!-- Image 2 -->
+            <img id="banner-1" src="https://i.ibb.co/BKNbcr3q/Captura-de-Tela-204.png" 
+                 alt="SigmaGallery Banner 2" 
+                 onerror="this.onerror=null; this.src='https://placehold.co/600x300/0c0d12/ffffff?text=SigmaGallery+Banner+2'"
+                 class="banner-img absolute inset-0 w-full h-full object-cover opacity-0 transition-all duration-700 ease-in-out group-hover:scale-105">
+            
+            <!-- Overlay Gradients -->
+            <div class="absolute inset-0 bg-gradient-to-t from-dark-base via-transparent to-black/40 pointer-events-none"></div>
+
+            <!-- Slide Indicators -->
+            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10">
+                <span id="dot-0" class="w-6 h-1.5 rounded-full bg-crimson-500 transition-all duration-300"></span>
+                <span id="dot-1" class="w-2 h-1.5 rounded-full bg-white/40 transition-all duration-300"></span>
+            </div>
+
+            <!-- Banner Switch Hint -->
+            <div class="absolute top-3 right-3 text-[10px] font-semibold text-white/90 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <i class="fa-solid fa-hand-pointer text-[10px] text-crimson-400"></i> Tap to switch
+            </div>
         </div>
 
-        <div class="file-details">
-            <span>APK: <strong>7.6 MB</strong></span>
-            <span>EXE: <strong>20.5 MB</strong></span>
-            <span>Safety: <strong>Verified</strong></span>
+        <!-- App Header (Icon + Title) -->
+        <div class="flex items-center gap-4 mb-6">
+            <div class="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl glass-inner p-1 overflow-hidden shrink-0 shadow-xl group border border-crimson-500/30">
+                <img src="https://i.ibb.co/C3J08bC2/Gemini-Generated-Image-n9jg1in9jg1in9jg.jpg" 
+                     alt="SigmaGallery Icon"
+                     onerror="this.onerror=null; this.src='https://placehold.co/100x100/0c0d12/ffffff?text=Icon'"
+                     class="w-full h-full object-cover rounded-xl transition-transform duration-500 group-hover:scale-110">
+            </div>
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                    SigmaGallery
+                </h1>
+                <p class="text-xs sm:text-sm text-slate-400 font-medium mt-1 flex items-center gap-2">
+                    <span>Version 2.2</span>
+                    <span class="inline-block w-1 h-1 rounded-full bg-slate-600"></span>
+                    <span class="text-crimson-400 font-semibold"><i class="fa-brands fa-android"></i> Android & <i class="fa-brands fa-windows"></i> Windows</span>
+                </p>
+            </div>
         </div>
 
-        <div class="button-group">
-            <button class="btn-download btn-apk" onclick="triggerDownload(event, 'SigmaGallery.apk', 'Android APK')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Download APK (Android)
+        <!-- Features List -->
+        <div class="glass-inner rounded-2xl p-4 sm:p-5 mb-6 space-y-3.5 text-xs sm:text-sm leading-relaxed text-slate-300">
+            <!-- Feature 1 -->
+            <div class="flex items-start gap-3">
+                <div class="w-7 h-7 rounded-lg bg-crimson-500/10 border border-crimson-500/30 text-crimson-400 flex items-center justify-center shrink-0 mt-0.5">
+                    <i class="fa-solid fa-star text-xs"></i>
+                </div>
+                <div>
+                    <strong class="text-white font-semibold">Top-Tier Quality:</strong> Built with premium performance in mind, ensuring an immersive and gorgeous media viewing experience.
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="flex items-start gap-3">
+                <div class="w-7 h-7 rounded-lg bg-crimson-500/10 border border-crimson-500/30 text-crimson-400 flex items-center justify-center shrink-0 mt-0.5">
+                    <i class="fa-solid fa-bolt text-xs"></i>
+                </div>
+                <div>
+                    <strong class="text-white font-semibold">Lightning Fast:</strong> Optimized rendering engine for seamless, lag-free navigation across massive image collections.
+                </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="flex items-start gap-3">
+                <div class="w-7 h-7 rounded-lg bg-crimson-500/10 border border-crimson-500/30 text-crimson-400 flex items-center justify-center shrink-0 mt-0.5">
+                    <i class="fa-solid fa-key text-xs"></i>
+                </div>
+                <div>
+                    <strong class="text-white font-semibold">Access Key Required:</strong> Both APK and EXE versions require an active security key. Get yours instantly at 
+                    <a href="https://link-center.net/4003397/PIAgrdJJsHUd" target="_blank" class="text-crimson-400 underline font-semibold hover:text-white transition-colors inline-flex items-center gap-1">
+                        Link-Center <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    </a>.
+                </div>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="flex items-start gap-3">
+                <div class="w-7 h-7 rounded-lg bg-crimson-500/10 border border-crimson-500/30 text-crimson-400 flex items-center justify-center shrink-0 mt-0.5">
+                    <i class="fa-brands fa-tiktok text-xs"></i>
+                </div>
+                <div>
+                    <strong class="text-white font-semibold">Frequent Updates & Feedback:</strong> Receives new images frequently. Share feedback on TikTok at 
+                    <a href="https://www.tiktok.com/@shrimpo.is.top1" target="_blank" class="text-crimson-400 underline font-semibold hover:text-white transition-colors inline-flex items-center gap-1">
+                        @shrimpo.is.top1 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    </a>.
+                </div>
+            </div>
+
+            <!-- Feature 5 -->
+            <div class="flex items-start gap-3">
+                <div class="w-7 h-7 rounded-lg bg-crimson-500/10 border border-crimson-500/30 text-crimson-400 flex items-center justify-center shrink-0 mt-0.5">
+                    <i class="fa-solid fa-shield-halved text-xs"></i>
+                </div>
+                <div>
+                    <strong class="text-white font-semibold">Safe & Verified:</strong> 100% clean builds, rigorously tested for secure operation across all compatible devices.
+                </div>
+            </div>
+        </div>
+
+        <!-- Metadata Grid -->
+        <div class="grid grid-cols-3 gap-2 p-3 glass-inner rounded-xl text-center mb-6 text-xs text-slate-400 border border-white/5">
+            <div class="p-1">
+                <div class="text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-0.5">APK Size</div>
+                <div class="text-white font-semibold sm:text-sm">7.6 MB</div>
+            </div>
+            <div class="p-1 border-x border-white/5">
+                <div class="text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-0.5">EXE Size</div>
+                <div class="text-white font-semibold sm:text-sm">20.5 MB</div>
+            </div>
+            <div class="p-1">
+                <div class="text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-0.5">Safety</div>
+                <div class="text-crimson-400 font-semibold sm:text-sm flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-circle-check text-[10px]"></i> Verified
+                </div>
+            </div>
+        </div>
+
+        <!-- Download Buttons -->
+        <div class="space-y-3 mb-4">
+            <!-- APK Download -->
+            <button onclick="triggerDownload(event, 'SigmaGallery.apk', 'Android APK')" 
+                    class="glow-button-apk relative w-full py-4 px-6 rounded-2xl text-white font-bold text-sm sm:text-base flex items-center justify-center gap-3 overflow-hidden transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 group">
+                <!-- Sheen sweep -->
+                <div class="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-sheen pointer-events-none"></div>
+                
+                <i class="fa-brands fa-android text-lg group-hover:scale-110 transition-transform"></i>
+                <span>Download APK (Android)</span>
+                <i class="fa-solid fa-arrow-down group-hover:translate-y-0.5 transition-transform"></i>
             </button>
-            <button class="btn-download btn-exe" onclick="triggerDownload(event, 'SigmaGallery.exe', 'Windows PC')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18"/><path d="M3 12h18"/></svg>
-                Download EXE (Windows PC)
+
+            <!-- EXE Download -->
+            <button onclick="triggerDownload(event, 'SigmaGallery.exe', 'Windows PC')" 
+                    class="glow-button-exe relative w-full py-4 px-6 rounded-2xl text-white font-bold text-sm sm:text-base flex items-center justify-center gap-3 overflow-hidden transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 group">
+                <i class="fa-brands fa-windows text-lg text-crimson-400 group-hover:scale-110 transition-transform"></i>
+                <span>Download EXE (Windows PC)</span>
+                <i class="fa-solid fa-arrow-down text-crimson-400 group-hover:translate-y-0.5 transition-transform"></i>
             </button>
         </div>
 
-        <!-- Added Please Support Us Note -->
-        <p class="footer-text" style="margin-top: 14px; font-weight: 500;">We wont be responsible to any alegations about any of these apps and by downloading you agree that we wont be responsible for your actions with them.</p>
+        <!-- Download Status Alert -->
+        <div id="download-status" class="hidden my-3 p-3 rounded-xl bg-crimson-500/15 border border-crimson-500/30 text-crimson-300 text-xs font-semibold text-center flex items-center justify-center gap-2 animate-pulse">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            <span id="status-text">Download started! Check your downloads.</span>
+        </div>
 
-        <div id="download-status">Download started! Check your downloads.</div>
-        <p class="footer-text">The file will download directly to your device.</p>
+        <!-- Legal Notice -->
+        <div class="text-center space-y-2 mt-5">
+            <p class="text-[11px] leading-relaxed text-slate-400 font-normal px-2">
+                We won't be responsible for any allegations regarding these apps. By downloading, you agree that we hold no liability for actions performed with them.
+            </p>
+            <p class="text-[10px] text-slate-500 font-medium">
+                The file will download directly to your device.
+            </p>
+        </div>
     </div>
 
     <script>
+        // Banner Carousel Logic
         let currentBannerIndex = 0;
         const banners = document.querySelectorAll('.banner-img');
-        function switchBanner() {
-            banners[currentBannerIndex].classList.remove('active');
-            currentBannerIndex = (currentBannerIndex + 1) % banners.length;
-            banners[currentBannerIndex].classList.add('active');
-        }
-        setInterval(switchBanner, 3000);
+        const dots = [document.getElementById('dot-0'), document.getElementById('dot-1')];
 
+        function switchBanner() {
+            banners[currentBannerIndex].style.opacity = '0';
+            dots[currentBannerIndex].className = 'w-2 h-1.5 rounded-full bg-white/40 transition-all duration-300';
+
+            currentBannerIndex = (currentBannerIndex + 1) % banners.length;
+
+            banners[currentBannerIndex].style.opacity = '1';
+            dots[currentBannerIndex].className = 'w-6 h-1.5 rounded-full bg-crimson-500 transition-all duration-300';
+        }
+        
+        setInterval(switchBanner, 4000);
+
+        // Download Action
         function triggerDownload(e, filename, fileType) {
             const btn = e.currentTarget;
+            
             const circle = document.createElement('span');
             const diameter = Math.max(btn.clientWidth, btn.clientHeight);
             const radius = diameter / 2;
             const rect = btn.getBoundingClientRect();
+            
             circle.style.width = circle.style.height = `${diameter}px`;
             circle.style.left = `${e.clientX - rect.left - radius}px`;
             circle.style.top = `${e.clientY - rect.top - radius}px`;
             circle.classList.add('ripple');
-            const ripple = btn.getElementsByClassName('ripple')[0];
-            if (ripple) { ripple.remove(); }
+
+            const existingRipple = btn.querySelector('.ripple');
+            if (existingRipple) {
+                existingRipple.remove();
+            }
             btn.appendChild(circle);
 
             const repo = 'Shrimpo-DW/SigmaGallery-Downloads';
@@ -158,31 +347,46 @@
             const releasePage = `https://github.com/${repo}/releases/tag/${tag}`;
 
             fetch(`https://api.github.com/repos/${repo}/releases/tags/${tag}`)
-                .then(r => { if (!r.ok) throw new Error('API ' + r.status); return r.json(); })
+                .then(r => { 
+                    if (!r.ok) throw new Error('API ' + r.status); 
+                    return r.json(); 
+                })
                 .then(rel => {
                     const asset = (rel.assets || []).find(x => x.name.toLowerCase().endsWith(ext));
                     if (!asset) throw new Error('No ' + ext + ' file in release');
                     window.location.href = asset.browser_download_url;
                 })
                 .catch(err => {
-                    console.error(err);
+                    console.error('GitHub API error:', err);
                     window.open(releasePage, '_blank');
                 });
 
-            const status = document.getElementById('download-status');
-            status.innerText = `Downloading ${fileType}... Check your downloads.`;
-            status.style.opacity = '1';
-            setTimeout(() => { status.style.opacity = '0'; }, 4000);
+            const statusBox = document.getElementById('download-status');
+            const statusText = document.getElementById('status-text');
+            
+            statusText.innerText = `Downloading ${fileType}... Check your downloads.`;
+            statusBox.classList.remove('hidden');
+
+            setTimeout(() => {
+                statusBox.classList.add('hidden');
+            }, 5000);
         }
 
+        // 3D Card Tilt Interaction
         const container = document.getElementById('tiltContainer');
-        document.addEventListener('mousemove', (e) => {
-            const xAxis = (window.innerWidth / 2 - e.pageX) / 45;
-            const yAxis = (window.innerHeight / 2 - e.pageY) / 45;
-            container.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
-        });
-        document.addEventListener('mouseleave', () => {
+        let isHovered = false;
+
+        container.addEventListener('mouseenter', () => { isHovered = true; });
+        container.addEventListener('mouseleave', () => { 
+            isHovered = false;
             container.style.transform = `rotateY(0deg) rotateX(0deg)`;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isHovered && window.innerWidth < 768) return;
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 40;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 40;
+            container.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
         });
     </script>
 </body>
