@@ -120,11 +120,12 @@
             </button>
         </div>
 
+        <!-- Added Please Support Us Note -->
+        <p class="footer-text" style="margin-top: 14px; font-weight: 500;">We wont be responsible to any alegations about any of these apps and by downloading you agree that we wont be responsible for your actions with them.</p>
+
         <div id="download-status">Download started! Check your downloads.</div>
         <p class="footer-text">The file will download directly to your device.</p>
     </div>
-
-
 
     <script>
         let currentBannerIndex = 0;
@@ -156,7 +157,6 @@
             const ext = isApk ? '.apk' : '.exe';
             const releasePage = `https://github.com/${repo}/releases/tag/${tag}`;
 
-            // Ask GitHub for the real file in the release, so the exact file name doesn't matter
             fetch(`https://api.github.com/repos/${repo}/releases/tags/${tag}`)
                 .then(r => { if (!r.ok) throw new Error('API ' + r.status); return r.json(); })
                 .then(rel => {
