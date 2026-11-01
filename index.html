@@ -146,17 +146,24 @@
             if (ripple) { ripple.remove(); }
             btn.appendChild(circle);
 
-            const base = 'https://github.com/Shrimpo-DW/SigmaGallery-Downloads/releases/download/';
-            const url = filename.endsWith('.apk')
-                ? base + 'apk/SigmaGallery.apk'
-                : base + 'exe/SigmaGallery.exe';
+            const repo = 'Shrimpo-DW/SigmaGallery-Downloads';
+            const isApk = filename.endsWith('.apk');
+            const tag = isApk ? 'apk' : 'exe';
+            const ext = isApk ? '.apk' : '.exe';
+            const releasePage = `https://github.com/${repo}/releases/tag/${tag}`;
 
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Ask GitHub for the real file in the release, so the exact file name doesn't matter
+            fetch(`https://api.github.com/repos/${repo}/releases/tags/${tag}`)
+                .then(r => { if (!r.ok) throw new Error('API ' + r.status); return r.json(); })
+                .then(rel => {
+                    const asset = (rel.assets || []).find(x => x.name.toLowerCase().endsWith(ext));
+                    if (!asset) throw new Error('No ' + ext + ' file in release');
+                    window.location.href = asset.browser_download_url;
+                })
+                .catch(err => {
+                    console.error(err);
+                    window.open(releasePage, '_blank');
+                });
 
             const status = document.getElementById('download-status');
             status.innerText = `Downloading ${fileType}... Check your downloads.`;
