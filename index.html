@@ -46,24 +46,24 @@
       font-size: 0.9rem;
       color: #38bdf8;
       margin-bottom: 24px;
-      padding: 10px;
+      padding: 12px;
       background-color: rgba(56, 189, 248, 0.1);
       border-radius: 8px;
-    }
-    .button-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      border: 1px solid rgba(56, 189, 248, 0.2);
     }
     .btn {
       display: inline-block;
       width: 100%;
-      padding: 14px 20px;
+      padding: 16px 20px;
       border-radius: 8px;
       font-weight: 600;
+      font-size: 1rem;
       text-decoration: none;
-      transition: background-color 0.2s ease;
+      transition: background-color 0.2s ease, transform 0.1s ease;
       cursor: pointer;
+    }
+    .btn:active {
+      transform: scale(0.98);
     }
     .btn-apk {
       background-color: #22c55e;
@@ -79,49 +79,70 @@
     .btn-exe:hover {
       background-color: #2563eb;
     }
+    .hidden {
+      display: none !important;
+    }
   </style>
 </head>
 <body>
 
   <div class="card">
     <h1>Sigma Gallery Downloads</h1>
-    <p id="instruction-text">Select your platform below if your download does not start automatically.</p>
+    <p id="desc-text">Get the latest version for your platform below.</p>
 
-    <div id="status" class="status-msg" style="display: none;"></div>
+    <div id="status" class="status-msg hidden"></div>
 
-    <div class="button-group">
-      <a href="SigmaGallery.apk" download class="btn btn-apk">Download Android (.APK)</a>
-      <a href="SigmaGallery.exe" download class="btn btn-exe">Download Windows (.EXE)</a>
+    <div id="download-container">
+      <!-- Buttons will be dynamically shown or highlighted based on URL parameters -->
+      <a id="apk-btn" href="SigmaGallery.apk" download class="btn btn-apk">Download Android (.APK)</a>
+      <a id="exe-btn" href="SigmaGallery.exe" download class="btn btn-exe hidden">Download Windows (.EXE)</a>
     </div>
   </div>
 
   <script>
-    // File names matching your repository root files
     const APK_FILE = "SigmaGallery.apk";
     const EXE_FILE = "SigmaGallery.exe";
 
-    function triggerDownload(filePath, label) {
-      document.getElementById("status").style.display = "block";
-      document.getElementById("status").innerText = "Downloading " + label + " automatically...";
-      document.getElementById("instruction-text").style.display = "none";
-
-      const a = document.createElement("a");
-      a.href = filePath;
-      a.download = filePath.split('/').pop();
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
-
-    // Check query parameters (?file=apk) or hashes (#apk)
     const params = new URLSearchParams(window.location.search);
     const fileParam = params.get('file')?.toLowerCase();
     const hash = window.location.hash.toLowerCase();
 
+    const statusEl = document.getElementById("status");
+    const apkBtn = document.getElementById("apk-btn");
+    const exeBtn = document.getElementById("exe-btn");
+    const descText = document.getElementById("desc-text");
+
+    let targetFile = "";
+    let label = "";
+
     if (fileParam === 'apk' || hash === '#apk') {
-      triggerDownload(APK_FILE, "Android APK");
+      targetFile = APK_FILE;
+      label = "Android APK";
+      apkBtn.classList.remove("hidden");
+      exeBtn.classList.add("hidden");
     } else if (fileParam === 'exe' || hash === '#exe') {
-      triggerDownload(EXE_FILE, "Windows EXE");
+      targetFile = EXE_FILE;
+      label = "Windows EXE";
+      exeBtn.classList.remove("hidden");
+      apkBtn.classList.add("hidden");
+    }
+
+    if (targetFile) {
+      descText.style.display = "none";
+      statusEl.style.display = "block";
+      statusEl.innerHTML = `Your download for <strong>${label}</strong> should begin shortly.<br><small style="color:#94a3b8; display:block; margin-top:6px;">If it doesn't start automatically, click the button below.</small>`;
+
+      // Attempt programmatic download (may be blocked by browser popup blockers)
+      window.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+          const a = document.createElement("a");
+          a.href = targetFile;
+          a.download = targetFile;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }, 500);
+      });
     }
   </script>
 
